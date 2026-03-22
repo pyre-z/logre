@@ -23,5 +23,5 @@ HTTP_PROXY = os.environ.get("HTTP_PROXY", None)
 HTTPS_PROXY = os.environ.get("HTTPS_PROXY", None)
 
 # path
-PROJECT_ROOT = Path(__file__).joinpath("../../..").resolve()
-PACKAGE_ROOT = PROJECT_ROOT.joinpath("src").resolve()
+PROJECT_ROOT = Path(os.curdir).resolve()
+PACKAGE_ROOT = Path(__file__).joinpath("../..").resolve()

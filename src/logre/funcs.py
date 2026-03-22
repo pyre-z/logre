@@ -3,6 +3,7 @@ import site
 import sys
 from functools import lru_cache
 from pathlib import Path
+import itertools
 
 from logre.const import PROJECT_ROOT
 
@@ -19,8 +20,13 @@ _SITE_PATH_LIST = sorted(map(Path, site.getsitepackages())) + [
     PROJECT_ROOT.joinpath("src").resolve(),
     PROJECT_ROOT,
 ]
-_ALL_PATHS = tuple(_SITE_PATH_LIST) + tuple(_SYS_PATH)
-_PKG_REPLACE_MAP: dict[str, str] = {"kaguya.__main__": "kaguya"}
+_ALL_PATHS = list(
+    filter(
+        lambda x: x.exists(),
+        itertools.chain.from_iterable([_SITE_PATH_LIST, _SYS_PATH]),
+    )
+)
+_ALL_PATHS = sorted(set(_ALL_PATHS), key=lambda x: _ALL_PATHS.index(x))
 
 
 @lru_cache(maxsize=64)
@@ -36,7 +42,12 @@ def resolve_path(path: str | Path, root: Path = PROJECT_ROOT) -> str:
 
 
 @lru_cache
-def path2pkg(path: str | Path, *, root: Path = PROJECT_ROOT) -> str | None:
+def path2pkg(
+    path: str | Path,
+    *,
+    root: Path = PROJECT_ROOT,
+    pkg_replace_map: dict[str, str] | None = None,
+) -> str | None:
     path = Path(path).resolve()
     root = root.resolve().absolute()
 
@@ -61,6 +72,17 @@ def path2pkg(path: str | Path, *, root: Path = PROJECT_ROOT) -> str | None:
         )
     else:
         result = "？"
-    for k, v in _PKG_REPLACE_MAP.items():
+    for k, v in (pkg_replace_map or {}).items():
         result = result.replace(k, v)
     return result
+
+
+#
+
+
+def main():
+    print(_ALL_PATHS)
+
+
+if __name__ == "__main__":
+    main()
