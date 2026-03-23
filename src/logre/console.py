@@ -280,4 +280,4 @@ def should_do_markup(stream: TextIO = sys.stdout) -> bool:
     return stream.isatty()
 
 
-default_console = Console()
+default_console = Console(width=120 if IS_RUNNING_IN_PYCHARM else None)

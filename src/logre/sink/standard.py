@@ -17,7 +17,7 @@ class StandardSink(AbstractSink):
             if kwargs:
                 console = Console(**kwargs)
             else:
-                console = default_console()
+                console = default_console
         self._console = console
 
     def write(self, record: LogRecord) -> None:
