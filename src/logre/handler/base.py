@@ -1,6 +1,4 @@
 import logging
-import os
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -40,7 +38,6 @@ class HandlerBase(logging.Handler):
         self._keywords = ["Kaguya"]
         self._highlighter = ReprHighlighter()
         self._render = LogRender()
-        self._executor = ThreadPoolExecutor(os.cpu_count() * 2)
 
     def render_record(self, record: LogRecord) -> list["ConsoleRenderable"]:
         message = self.format(record)
@@ -65,7 +62,6 @@ class HandlerBase(logging.Handler):
         return self.render(
             record=record, traceback=traceback, message_renderable=message_renderable
         )
-
 
     def emit(self, record: LogRecord) -> None:
         log_renderables = self.render_record(record)

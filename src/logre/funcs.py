@@ -72,17 +72,7 @@ def path2pkg(
         )
     else:
         result = "？"
-    for k, v in (pkg_replace_map or {}).items():
-        result = result.replace(k, v)
+    if pkg_replace_map:
+        for k, v in pkg_replace_map.items():
+            result = result.replace(k, v)
     return result
-
-
-#
-
-
-def main():
-    print(_ALL_PATHS)
-
-
-if __name__ == "__main__":
-    main()
