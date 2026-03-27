@@ -81,6 +81,13 @@ class HandlerBase(logging.Handler):
             if use_markup
             else Text(message, style=style)
         )
+        prefix_text = Text()
+        if prefix := getattr(record, "prefix", None):
+            # noinspection dh
+            prefix_text = (
+                Text("[") + Text.styled(prefix, style="logging.prefix") + Text("]")
+            )
+        message_text = prefix_text + message_text
 
         highlighter: "Highlighter" = getattr(record, "highlighter", self._highlighter)
         if highlighter:

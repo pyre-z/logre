@@ -1,9 +1,7 @@
 import logging
 import os
 import warnings
-from contextvars import ContextVar
 from multiprocessing import RLock as Lock
-from queue import Queue
 from typing import ClassVar, Mapping, TYPE_CHECKING
 
 from typing_extensions import Self
@@ -18,11 +16,6 @@ if TYPE_CHECKING:
 
 __all__ = ("Logger", "logger")
 
-NONE = object()
-EXTRA_CONTEXT_TOKEN = Queue()
-EXTRA_CONTEXT = ContextVar("EXTRA_CONTEXT", default={})
-
-
 class Logger(LoggerBase):
     _lock: ClassVar["LockType"] = Lock()
     _instance: ClassVar[Self | None] = None
@@ -32,6 +25,8 @@ class Logger(LoggerBase):
             if cls._instance is None:
                 cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
+
+    _kwargs: dict[str, ...] = {}
 
     def __init__(self, name: str = None, level: int | str | Level = None):
         if level is None:
@@ -57,21 +52,21 @@ class Logger(LoggerBase):
 
     @property
     def markup(self) -> Self:
-        kwargs = {}
-        try:
-            kwargs = EXTRA_CONTEXT.get()
-            if not EXTRA_CONTEXT_TOKEN.empty():
-                EXTRA_CONTEXT.reset(EXTRA_CONTEXT_TOKEN.get_nowait())
-        except LookupError:
-            pass
-        kwargs["markup"] = True
-        EXTRA_CONTEXT_TOKEN.put(EXTRA_CONTEXT.set(kwargs))
+        self._kwargs["markup"] = True
         return self
 
-    def config(self, markup: bool | None = NONE, **kwargs) -> Self:
+    def prefix(self, prefix: str) -> Self:
+        self._kwargs["prefix"] = prefix
+        return self
+
+    def config(
+        self, markup: bool | None = None, prefix: str | None = None, **kwargs
+    ) -> Self:
         if markup is not None:
             kwargs["markup"] = markup
-        EXTRA_CONTEXT_TOKEN.put(EXTRA_CONTEXT.set(kwargs))
+        if prefix:
+            kwargs["prefix"] = prefix
+        self._kwargs.update(kwargs)
         return self
 
     def _log(
@@ -85,9 +80,8 @@ class Logger(LoggerBase):
         stacklevel: int = 1,
     ) -> None:
         extra = extra or {}
-        extra.update(EXTRA_CONTEXT.get())
-        if not EXTRA_CONTEXT_TOKEN.empty():
-            EXTRA_CONTEXT.reset(EXTRA_CONTEXT_TOKEN.get_nowait())
+        extra.update(self._kwargs)
+        self._kwargs = {}
         super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
 
     def init(self) -> None:

@@ -1,6 +1,6 @@
 [project]
 name = "logre"
-version = "0.0.2"
+version = "0.0.3"
 description = "一个融合了Loguru的强大日志管理功能和Rich的华丽终端渲染的Python日志库。"
 requires-python = ">=3.14"
 dependencies = [
