@@ -75,6 +75,7 @@ HIKARI_STYLES: dict[str, Style] = DEFAULT_STYLES | {
     "layout.tree.column": Style(dim=False, color=BLUE),
     # logging
     "logging.prefix": Style(bold=True, color="#FFB84D"),
+    "logging.prefix.brackets": Style(bold=True, color="#7C7980"),
     "logging.keyword": Style(bold=True, color=ORANGE),
     "logging.level.notset": Style(color=DARK_GREY, dim=True),
     "logging.level.trace": Style(color=GREY),

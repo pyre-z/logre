@@ -85,7 +85,9 @@ class HandlerBase(logging.Handler):
         if prefix := getattr(record, "prefix", None):
             # noinspection dh
             prefix_text = (
-                Text("[") + Text.styled(prefix, style="logging.prefix") + Text("]")
+                Text.styled("[", style="logging.prefix.brackets")
+                + Text.styled(prefix, style="logging.prefix")
+                + Text.styled("] ", style="logging.prefix.brackets")
             )
         message_text = prefix_text + message_text
 
