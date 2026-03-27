@@ -55,8 +55,8 @@ def path2pkg(
 
     for site_path in _ALL_PATHS:
         if path.is_relative_to(site_path):
-            _path = str(path.relative_to(site_path))
-            break
+            temp_path = str(path.relative_to(site_path))
+            _path = min(_path or temp_path, temp_path)
 
     if _path is None:
         if path.is_relative_to(root):
