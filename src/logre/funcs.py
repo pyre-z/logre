@@ -1,9 +1,9 @@
+import itertools
 import os
 import site
 import sys
 from functools import lru_cache
 from pathlib import Path
-import itertools
 
 from logre.const import PROJECT_ROOT
 
@@ -41,22 +41,23 @@ def resolve_path(path: str | Path, root: Path = PROJECT_ROOT) -> str:
     return path_string
 
 
-@lru_cache
+@lru_cache(128)
 def path2pkg(
     path: str | Path,
     *,
     root: Path = PROJECT_ROOT,
     pkg_replace_map: dict[str, str] | None = None,
 ) -> str | None:
-    path = Path(path).resolve()
+    path = Path(path).resolve().absolute().with_suffix("")
     root = root.resolve().absolute()
 
-    _path: str | None = None
+    _path: Path | str | None = None
 
     for site_path in _ALL_PATHS:
         if path.is_relative_to(site_path):
-            temp_path = str(path.relative_to(site_path))
-            _path = min(_path or temp_path, temp_path)
+            temp_path = path.relative_to(site_path)
+            if _path is None or len(temp_path.parts) < len(_path.parts):
+                _path = temp_path
 
     if _path is None:
         if path.is_relative_to(root):
@@ -65,11 +66,10 @@ def path2pkg(
         else:
             path_string = None
     else:
-        path_string = _path.split(".")[0].replace(os.sep, ".")
+        path_string = str(_path).replace(os.sep, ".")
     if path_string is not None:
-        result = path_string.replace("lib.site-packages.", "").replace(
-            "Lib.site-packages.", ""
-        )
+        for old_str in ["lib.site-packages.", "Lib.site-packages."]:
+            result = path_string.replace(old_str, "")
     else:
         result = "？"
     if pkg_replace_map:
