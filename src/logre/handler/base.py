@@ -35,7 +35,7 @@ class HandlerBase(logging.Handler):
 
         self._sinks = [default_sink]
 
-        self._keywords = ["Kaguya"]
+        self._keywords = []
         self._highlighter = ReprHighlighter()
         self._render = LogRender()
 

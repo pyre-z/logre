@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
+from multiprocessing import Value
 from pathlib import Path
 from typing import Callable, Iterable, TYPE_CHECKING
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from rich.containers import Renderables
 from rich.table import Table
 from rich.text import Text, TextType
-from multiprocessing import Value
+
 from logre.const import IS_RUNNING_IN_PYCHARM, IS_WINDOWS
 from logre.level import Level
 
@@ -19,6 +20,8 @@ FormatTimeCallable = Callable[[datetime], Text]
 
 
 class LogRenderConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="LOG_RENDER_")
+
     show_time: bool = True
     show_level: bool = True
     show_level_icon: bool = IS_WINDOWS
@@ -29,14 +32,15 @@ class LogRenderConfig(BaseSettings):
     omit_times_part_interval: float | int = 1
     level_width: int = max(map(len, Level.__members__.keys()))
 
+
 LAST_LOG_TIME = Value("d", 0)
 LAST_LOG_COUNT = Value("i", 0)
+
 
 # noinspection D
 class LogRender:
     def __init__(self, config: LogRenderConfig | None = None) -> None:
         self._config = config or LogRenderConfig()
-        # self._last_time: datetime | None = None
 
     def __call__(
         self,
@@ -49,7 +53,6 @@ class LogRender:
         line_no: int | None = None,
         link_path: Path | str | None = None,
     ) -> list[Table]:
-        global LAST_LOG_TIME
         linked_path = link_path is not None and not IS_RUNNING_IN_PYCHARM
 
         level = level or Level.NOTSET

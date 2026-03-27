@@ -5,35 +5,15 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from typing import Callable, TypeVar
 
-import regex as re
-
 from logre.funcs import resolve_path
 from logre.record import LogRecord
 
-__all__ = ("Filter", "BaseFilter")
+try:
+    import regex as re
+except ImportError:
+    import re
 
-# noinspection SpellCheckingInspection
-_FILTERED_MODULE = [
-    "httpx._client",
-    "httpcore._trace",
-    "tzlocal.unix",
-    "aiocache.base",
-    "telethon.network.mtprotosender",
-    "telethon.extensions.messagepacker",
-    "tortoise.backends.asyncpg.client",
-    "tortoise.utils",
-    "tortoise.backends.base_postgres.client",
-    "telethon.crypto.aes",
-    "telethon.crypto.libssl",
-]
-
-
-@lru_cache(maxsize=128)
-def filter_for_module(module: str) -> bool:
-    for regex in _FILTERED_MODULE:
-        if re.findall(regex, module):
-            return True
-    return False
+__all__ = ("Filter", "BaseFilter", "filter_method", "default_filter")
 
 
 FilterMethodType = Callable[["Filter", LogRecord], bool]
@@ -77,14 +57,19 @@ class Filter(logging.Filter):
 
 
 class BaseFilter(Filter):
+    _FILTERED_MODULE = []
+
+    @lru_cache(maxsize=128)
+    def _filter_for_module(self, module) -> bool:
+        for regex in self._FILTERED_MODULE:
+            if re.findall(regex, module):
+                return True
+        return False
+
     @filter_method
     def filter_module(self, record: LogRecord) -> bool:
         module = resolve_path(record.pathname)
-        return not filter_for_module(module)
+        return not self._filter_for_module(module)
 
-    @filter_method
-    def filter_telegram(self, record: LogRecord) -> bool:
-        module = resolve_path(record.pathname)
-        if module in ["telegram.ext._application"]:
-            return True
-        return False
+
+default_filter = BaseFilter()
