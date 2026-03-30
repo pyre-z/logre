@@ -1,7 +1,5 @@
 import functools
 import logging
-import os
-from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from typing import Callable, TypeVar
 
@@ -45,15 +43,16 @@ def filter_method(method: FilterMethodType) -> FilterMethod:
 class Filter(logging.Filter):
     _filter_methods: list[str]
 
-    def __init__(self, name: str | None = None) -> None:
-        super().__init__(name or "")
-        self._executor = ThreadPoolExecutor(max_workers=os.cpu_count() * 2)
+    def filter(self, record: LogRecord) -> bool | LogRecord:
+        for method_name in self._filter_methods:
+            result = getattr(self, method_name)(record)
+            if isinstance(result, LogRecord):
+                record = result
+                continue
+            if not result:
+                return False
 
-    def filter(self, record: LogRecord) -> bool:
-        def execute(_method: str) -> bool:
-            return getattr(self, _method)(record)
-
-        return any(self._executor.map(execute, self._filter_methods))
+        return True
 
 
 class BaseFilter(Filter):
