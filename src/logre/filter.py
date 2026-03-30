@@ -52,7 +52,7 @@ class Filter(logging.Filter):
             if not result:
                 return False
 
-        return True
+        return record
 
 
 class BaseFilter(Filter):
