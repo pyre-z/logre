@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 import traceback
-import warnings
 from functools import lru_cache
 from io import StringIO
 from pathlib import Path
@@ -23,7 +22,7 @@ if sys.version_info >= (3, 14):
 else:
     import warnings
 
-    _showwarnmsg = warnings._showwarning
+    _showwarnmsg = warnings._showwarnmsg
 
 __all__ = ("LoggerBase",)
 
@@ -71,7 +70,7 @@ class LoggerBase(logging.Logger):
 
     # noinspection PyTypeChecker
     def __init__(self, name: str, level: Level | int | str = Level.NOTSET) -> None:
-        level = Level[level]
+        level: Level = Level[level]
         super().__init__(name, level.num)
         self.level = level
 
@@ -88,6 +87,7 @@ class LoggerBase(logging.Logger):
         extra: Mapping[str, object] | None = None,
         sinfo: str | None = None,
     ) -> LogRecord:
+        # noinspection PyTypeChecker
         return super().makeRecord(
             name, level, fn, lno, msg, args, exc_info, func, extra, sinfo
         )
@@ -141,6 +141,7 @@ class LoggerBase(logging.Logger):
                 exc_info = (type(exc_info), exc_info, exc_info.__traceback__)
             elif not isinstance(exc_info, tuple):
                 exc_info = sys.exc_info()
+        # noinspection PyTypeChecker
         record = self.makeRecord(
             self.name, level, fn, lno, msg, args, exc_info, func, extra, sinfo
         )

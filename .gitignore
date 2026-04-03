@@ -88,3 +88,6 @@ dmypy.json
 cython_debug/
 tests/
 loguru/
+.python-version
+uv.lock
+main.py
