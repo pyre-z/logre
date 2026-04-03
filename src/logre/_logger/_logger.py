@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 __all__ = ("Logger", "logger")
 
+
 class Logger(LoggerBase):
     _lock: ClassVar["LockType"] = Lock()
     _instance: ClassVar[Self | None] = None
@@ -97,8 +98,10 @@ logging.getLogger("apscheduler").setLevel(
 
 def _show_warning(message, category, filename, lineno, file=None, line=None):
     if file is None:
-        s = warnings.formatwarning(message, category, filename, lineno, line)
-        logger.warning(str(s), stacklevel=2)
+        warning = warnings.WarningMessage(
+            message, category, filename, lineno, file, line
+        )
+        logger.warning(f"{warning.category.__name__}: {warning.message}", stacklevel=2)
 
 
 warnings.showwarning = _show_warning
