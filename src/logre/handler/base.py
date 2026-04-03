@@ -2,12 +2,13 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from rich.highlighter import Highlighter, ReprHighlighter
+from rich.highlighter import Highlighter
 from rich.text import Text
 
 from logre.funcs import resolve_path
 from logre.handler.render import LogRender
 from logre.handler.traceback import Traceback
+from logre.highlighter import default_highlighter
 from logre.level import Level, default_level
 from logre.record import LogRecord
 from logre.sink import default_sink
@@ -29,14 +30,14 @@ class HandlerBase(logging.Handler):
         self,
         level: Level | str | int = default_level,
     ) -> None:
-        level = Level[level]
+        level: Level = Level[level]
         logging.Handler.__init__(self, level.num)
         self.level = level
 
         self._sinks = [default_sink]
 
         self._keywords = []
-        self._highlighter = ReprHighlighter()
+        self._highlighter = default_highlighter
         self._render = LogRender()
 
     def render_record(self, record: LogRecord) -> list["ConsoleRenderable"]:
@@ -83,7 +84,7 @@ class HandlerBase(logging.Handler):
         )
         prefix_text = Text()
         if prefix := getattr(record, "prefix", None):
-            # noinspection dh
+            # noinspection dh,PyTypeChecker
             prefix_text = (
                 Text.styled("[", style="logging.prefix.brackets")
                 + Text.styled(prefix, style="logging.prefix")
@@ -91,7 +92,7 @@ class HandlerBase(logging.Handler):
             )
         message_text = prefix_text + message_text
 
-        highlighter: "Highlighter" = getattr(record, "highlighter", self._highlighter)
+        highlighter: "Highlighter" = getattr(record, "highlighter") or self._highlighter
         if highlighter:
             message_text = highlighter(message_text)
 

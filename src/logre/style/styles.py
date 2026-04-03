@@ -204,4 +204,13 @@ HIKARI_STYLES: dict[str, Style] = DEFAULT_STYLES | {
     "iso8601.date": Style(color=BLUE),
     "iso8601.time": Style(color=MAGENTA),
     "iso8601.timezone": Style(color=YELLOW),
+    # email
+    "email.addr": Style(italic=True, bold=True, color=YELLOW, underline=True),
+    "email.symbol": Style(italic=True, color=BRIGHT_YELLOW, underline=True),
+    "email.domain": Style(italic=True, color=YELLOW, underline=True),
+    # shortcut
+    "shortcut": Style(italic=True, bold=True, color=CYAN),
+    "shortcut.modifier": Style(italic=True, bold=True, color=GREEN),
+    "shortcut.plus": Style(italic=True, color=BRIGHT_GREEN),
+    "shortcut.function": Style(italic=True, bold=True, color=RED),
 }
