@@ -12,10 +12,18 @@ from typing import Mapping
 
 from typing_extensions import Self
 
-from logre.typedefs import ArgsType, ExcInfoType, SysExcInfoType
 from logre.level import Level
 from logre.record import LogRecord
-import _py_warnings
+from logre.typedefs import ArgsType, ExcInfoType, SysExcInfoType
+
+if sys.version_info >= (3, 14):
+    import _py_warnings
+
+    _showwarnmsg = _py_warnings._showwarnmsg
+else:
+    import warnings
+
+    _showwarnmsg = warnings._showwarning
 
 __all__ = ("LoggerBase",)
 
@@ -41,9 +49,8 @@ def _is_internal_file(path: Path) -> bool:
 def _is_internal_frame(frame: FrameType) -> bool:
     # noinspection PyProtectedMember
     if (
-        frame.f_code.co_filename == _py_warnings._showwarnmsg.__code__.co_filename
-        and frame.f_code.co_firstlineno
-        == _py_warnings._showwarnmsg.__code__.co_firstlineno
+        frame.f_code.co_filename == _showwarnmsg.__code__.co_filename
+        and frame.f_code.co_firstlineno == _showwarnmsg.__code__.co_firstlineno
     ):
         return True
     filename = os.path.normcase(frame.f_code.co_filename)
