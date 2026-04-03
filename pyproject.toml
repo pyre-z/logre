@@ -1,8 +1,8 @@
 [project]
 name = "logre"
-version = "0.0.7"
+version = "0.0.8"
 description = "一个融合了Loguru的强大日志管理功能和Rich的华丽终端渲染的Python日志库。"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     "pydantic-settings>=2.13.0",
     "rich",
