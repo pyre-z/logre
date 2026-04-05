@@ -132,4 +132,4 @@ class HandlerBase(logging.Handler):
             line_no=record.lineno,
             link_path=record.pathname,
         )
-        return log_renderable
+        return log_renderable  # ty:ignore[invalid-return-type]

@@ -1,6 +1,6 @@
 [project]
 name = "logre"
-version = "0.1.0"
+version = "0.1.1"
 description = "一个融合了Loguru的强大日志管理功能和Rich的华丽终端渲染的Python日志库。"
 requires-python = ">=3.13"
 dependencies = [
@@ -11,3 +11,6 @@ dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.ty.rules]
+invalid-method-override = "ignore"
