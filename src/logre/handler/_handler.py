@@ -11,8 +11,11 @@ from logre.typedefs import StrOrPath, Writable
 
 __all__ = ("Handler",)
 
-SinkArgsType = TextIO | Writable | Callable[[LogRecord], None] | StrOrPath
+FileSinkArgsType = StrOrPath | TextIO | Writable
+SinkArgsType = FileSinkArgsType | Callable[[LogRecord], None] | AbstractSink
+
 _LOCK = RLock()
+
 
 class Handler(HandlerBase):
     def add_keywords(self, *keywords: str) -> None:
@@ -34,16 +37,16 @@ class Handler(HandlerBase):
             sink = StandardSink(width=180 if IS_RUNNING_IN_PYCHARM else None)
         elif isinstance(sink, AbstractSink):
             sink = sink
-        elif isinstance(sink, Callable):
-            sink = CallableSink(sink)
+        elif callable(sink):
+            sink = CallableSink(sink)  # ty:ignore[invalid-argument-type]
         # else:
         #     sink = FileSink(sink)
 
-        self._sinks.append(sink)
+        self._sinks.append(sink)  # ty:ignore[invalid-argument-type]
 
     def remove_sink(self, sink: AbstractSink) -> bool:
         if sink in self._sinks:
-            self._sinks.remove(sink)
+            self._sinks.remove(sink)  # ty:ignore[invalid-argument-type]
             return True
         return False
 

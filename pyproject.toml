@@ -14,3 +14,4 @@ build-backend = "hatchling.build"
 
 [tool.ty.rules]
 invalid-method-override = "ignore"
+unresolved-import = "ignore"

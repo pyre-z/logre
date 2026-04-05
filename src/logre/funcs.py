@@ -51,22 +51,21 @@ def path2pkg(
     path = Path(path).resolve().absolute().with_suffix("")
     root = root.resolve().absolute()
 
-    _path: Path | str | None = None
+    new_path: Path | None = None
 
     for site_path in _ALL_PATHS:
         if path.is_relative_to(site_path):
             temp_path = path.relative_to(site_path)
-            if _path is None or len(temp_path.parts) < len(_path.parts):
-                _path = temp_path
+            if new_path is None or len(temp_path.parts) < len(new_path.parts):
+                new_path = temp_path
 
-    if _path is None:
+    if new_path is None:
         if path.is_relative_to(root):
-            _path = Path(path).relative_to(root).stem
-            path_string = _path.replace(os.sep, ".")
+            path_string = Path(path).relative_to(root).stem.replace(os.sep, ".")
         else:
             path_string = None
     else:
-        path_string = str(_path).replace(os.sep, ".")
+        path_string = str(new_path).replace(os.sep, ".")
     if path_string is not None:
         for old_str in ["lib.site-packages.", "Lib.site-packages."]:
             result = path_string.replace(old_str, "")
