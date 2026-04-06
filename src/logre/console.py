@@ -103,6 +103,7 @@ class Console(RichConsole):
         else:
             return super()._detect_color_system()
 
+    # noinspection D
     def _get_rendered_buffer(
         self,
         *objects,

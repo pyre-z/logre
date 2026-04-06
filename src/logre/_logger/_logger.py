@@ -1,20 +1,13 @@
 import logging
 import os
 import warnings
-from multiprocessing import RLock as Lock
-from typing import TYPE_CHECKING, ClassVar, Mapping
 
 from pydantic import BaseModel
-from typing_extensions import Self
 
 from logre._logger._base import LoggerBase
 from logre.const import PROJECT_ROOT
 from logre.handler import default_handler
 from logre.level import LogreLevel, default_level
-from logre.typedefs import ArgsType, ExcInfoType
-
-if TYPE_CHECKING:
-    from multiprocessing.synchronize import RLock as LockType
 
 __all__ = ("Logger", "logger")
 
@@ -24,17 +17,7 @@ class _LoggerConfig(BaseModel):
     prefix: str | None = None
 
 
-class _Logger(LoggerBase):
-    _lock: ClassVar["LockType"] = Lock()
-    _instance: ClassVar[Self | None] = None
-
-    def __new__(cls, *args, **kwargs) -> Self:
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super().__new__(cls, *args, **kwargs)
-        return cls._instance
-
+class _LogreLogger(LoggerBase):
     def __init__(self, name=None, level=None, *, config=None) -> None:
         self._config = config or _LoggerConfig()
         if level is None:
@@ -42,25 +25,16 @@ class _Logger(LoggerBase):
         else:
             level = LogreLevel(level if isinstance(level, int) else default_level)
         super().__init__(name or PROJECT_ROOT.name or "logre", level)
-        self.addHandler(default_handler)
 
-    def _log(
-        self,
-        level: int | LogreLevel,
-        msg: object,
-        args: ArgsType,
-        exc_info: ExcInfoType | None = None,
-        extra: Mapping[str, object] | None = None,
-        stack_info: bool = False,
-        stacklevel: int = 1,
-    ) -> None:
+    def _log(self, *args, extra=None, **kwargs) -> None:
         extra = self._config.model_dump() | dict(extra or {})
-        super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
+        super()._log(*args, extra=extra, **kwargs)
 
 
 class Logger:
-    def __init__(self, *, _logger=None) -> None:
-        self._core = _logger or _Logger()
+    def __init__(self, markup=None, prefix=None) -> None:
+        self._core = _LogreLogger(config=_LoggerConfig(markup=markup, prefix=prefix))
+        self._core.addHandler(default_handler)
 
     def trace(self, *args, **kwargs):
         return self.log(LogreLevel.TRACE, *args, **kwargs)
@@ -97,17 +71,18 @@ class Logger:
 
     @property
     def markup(self):
-        config = self._core._config
-        config.markup = True
-        return Logger(_logger=_Logger(config=config))
+        return Logger(
+            **self._core._config.model_copy(update={"markup": True}).model_dump()
+        )
 
     def prefix(self, prefix=None):
-        config = self._core._config
-        config.prefix = prefix
-        return Logger(_logger=_Logger(config=config))
+        return Logger(
+            **self._core._config.model_copy(update={"prefix": prefix}).model_dump()
+        )
 
 
 logging.basicConfig(handlers=[default_handler])
+logging.setLoggerClass(_LogreLogger)
 logging.getLogger("apscheduler").setLevel(
     logging.DEBUG if os.getenv("DEBUG") else logging.INFO
 )

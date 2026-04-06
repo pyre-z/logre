@@ -9,8 +9,6 @@ from pathlib import Path
 from types import FrameType
 from typing import Mapping
 
-from logre.level import LogreLevel
-from logre.record import LogreRecord
 from logre.typedefs import ArgsType, ExcInfoType, SysExcInfoType
 
 if sys.version_info >= (3, 14):
@@ -69,8 +67,6 @@ logging.addLevelName(25, "SUCCESS")
 
 
 class LoggerBase(logging.Logger):
-    level: LogreLevel
-
     def makeRecord(
         self,
         name: str,
@@ -83,8 +79,10 @@ class LoggerBase(logging.Logger):
         func: str | None = None,
         extra: Mapping[str, object] | None = None,
         sinfo: str | None = None,
-    ) -> LogreRecord:
-        result = LogreRecord(name, level, fn, lno, msg, args, exc_info, func, sinfo)
+    ) -> logging.LogRecord:
+        result = logging.LogRecord(
+            name, level, fn, lno, msg, args, exc_info, func, sinfo
+        )
         if extra is not None:
             for key in extra:
                 result.__dict__[key] = extra[key]

@@ -19,11 +19,6 @@ class _LoggerConfig(BaseModel):
     prefix: str | None = None
 
 class _Logger(LoggerBase):
-    _lock: ClassVar["LockType"] = Lock()
-    _instance: ClassVar[Self | None] = None
-
-    def __new__(cls, *args, **kwargs) -> Self: ...
-
     _config: _LoggerConfig
 
     def __init__(
@@ -47,7 +42,9 @@ class _Logger(LoggerBase):
 class Logger:
     _core: _Logger
 
-    def __init__(self, *, _logger: _Logger | None = None) -> None: ...
+    def __init__(
+        self, markup: bool | None = None, prefix: str | None = None
+    ) -> None: ...
     def trace(
         self,
         msg: object,

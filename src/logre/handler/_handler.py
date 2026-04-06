@@ -52,7 +52,11 @@ class Handler(HandlerBase):
 
         self._sinks.append(sink)  # ty:ignore[invalid-argument-type]
 
-    def remove_sink(self, sink: AbstractSink) -> bool:
+    def remove_sink(self, sink: AbstractSink | None = None) -> bool:
+        if sink is None:
+            result = bool(self._sinks)
+            self._sinks = []
+            return result
         if sink in self._sinks:
             self._sinks.remove(sink)  # ty:ignore[invalid-argument-type]
             return True
