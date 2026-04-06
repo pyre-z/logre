@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Callable, TypeVar
 
 from logre.funcs import resolve_path
-from logre.record import LogRecord
+from logre.record import LogreRecord
 
 try:
     import regex as re
@@ -14,7 +14,7 @@ except ImportError:
 __all__ = ("Filter", "BaseFilter", "filter_method", "default_filter")
 
 
-FilterMethodType = Callable[["Filter", LogRecord], bool]
+FilterMethodType = Callable[..., bool] | Callable[..., LogreRecord]
 FT = TypeVar("FT", bound="Filter")
 
 
@@ -31,9 +31,9 @@ class FilterMethod:
         owner._filter_methods.append(name)
 
     def __get__(
-        self, instance: FT, owner: type[FT] | None = None
-    ) -> Callable[[LogRecord], bool]:
-        return functools.partial(self.func, instance)
+        self, instance: FT, _: type[FT] | None = None
+    ) -> Callable[[LogreRecord], bool]:
+        return functools.partial(self.func, instance)  # ty:ignore[invalid-return-type]
 
 
 def filter_method(method: FilterMethodType) -> FilterMethod:
@@ -43,10 +43,10 @@ def filter_method(method: FilterMethodType) -> FilterMethod:
 class Filter(logging.Filter):
     _filter_methods: list[str]
 
-    def filter(self, record: LogRecord) -> bool | LogRecord:
+    def filter(self, record: LogreRecord) -> bool | LogreRecord:
         for method_name in self._filter_methods:
             result = getattr(self, method_name)(record)
-            if isinstance(result, LogRecord):
+            if isinstance(result, LogreRecord):
                 record = result
                 continue
             if not result:
@@ -66,7 +66,7 @@ class BaseFilter(Filter):
         return False
 
     @filter_method
-    def filter_module(self, record: LogRecord) -> bool:
+    def filter_module(self, record: LogreRecord) -> bool:
         module = resolve_path(record.pathname)
         return not self._filter_for_module(module)
 

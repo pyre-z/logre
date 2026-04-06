@@ -9,7 +9,7 @@ from rich.table import Table
 from rich.text import Text, TextType
 
 from logre.const import IS_RUNNING_IN_PYCHARM, IS_WINDOWS
-from logre.level import Level
+from logre.level import LogreLevel
 
 if TYPE_CHECKING:
     from rich.console import ConsoleRenderable, RenderableType
@@ -30,7 +30,7 @@ class LogRenderConfig(BaseSettings):
     time_format: str | FormatTimeCallable = "[%Y/%m/%d %X]"
     omit_times_part: bool = True
     omit_times_part_interval: float | int = 1
-    level_width: int = max(map(len, Level.__members__.keys()))
+    level_width: int = max(map(len, LogreLevel.__members__.keys()))
 
 
 LAST_LOG_TIME = Value("d", 0)
@@ -47,7 +47,7 @@ class LogRender:
         renderables: Iterable["ConsoleRenderable"],
         log_time: datetime | None = None,
         time_format: str | FormatTimeCallable | None = None,
-        level: Level | None = None,
+        level: LogreLevel | None = None,
         level_text: TextType = "",
         path: str | None = None,
         line_no: int | None = None,
@@ -55,7 +55,7 @@ class LogRender:
     ) -> list[Table]:
         linked_path = link_path is not None and not IS_RUNNING_IN_PYCHARM
 
-        level = level or Level.NOTSET
+        level = level or LogreLevel.NOTSET
 
         output_time = None
         output_main = Table.grid(padding=(0, 1), pad_edge=True)

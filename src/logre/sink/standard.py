@@ -1,4 +1,4 @@
-from logre.record import LogRecord
+from logre.record import LogreRecord
 from logre.sink.abc import AbstractSink
 from logre.console import Console, default_console
 
@@ -20,7 +20,7 @@ class StandardSink(AbstractSink):
                 console = default_console
         self._console = console
 
-    def write(self, record: LogRecord) -> None:
+    def write(self, record: LogreRecord) -> None:
         self.console.print(*record.__getattribute__("renderables"))
 
     def stop(self) -> None:

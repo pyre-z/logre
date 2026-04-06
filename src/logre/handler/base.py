@@ -9,8 +9,8 @@ from logre.funcs import resolve_path
 from logre.handler.render import LogRender
 from logre.handler.traceback import Traceback
 from logre.highlighter import default_highlighter
-from logre.level import Level, default_level
-from logre.record import LogRecord
+from logre.level import LogreLevel, default_level
+from logre.record import LogreRecord
 from logre.sink import default_sink
 
 if TYPE_CHECKING:
@@ -21,17 +21,21 @@ __all__ = ("HandlerBase",)
 
 
 class HandlerBase(logging.Handler):
-    level: Level
+    level: LogreLevel
 
-    def setLevel(self, level: int | str | Level) -> None:
-        self.level = Level[level]
+    def setLevel(self, level: int | str | LogreLevel) -> None:
+        self.level = LogreLevel[
+            logging.getLevelName(level) if isinstance(level, int) else level
+        ]
 
     def __init__(
         self,
-        level: Level | str | int = default_level,
+        level: LogreLevel | str | int = default_level,
     ) -> None:
-        level: Level = Level[level]
-        logging.Handler.__init__(self, level.num)
+        level: LogreLevel = LogreLevel[
+            logging.getLevelName(level) if isinstance(level, int) else level
+        ]
+        logging.Handler.__init__(self, level)
         self.level = level
 
         self._sinks = [default_sink]
@@ -40,7 +44,7 @@ class HandlerBase(logging.Handler):
         self._highlighter = default_highlighter
         self._render = LogRender()
 
-    def render_record(self, record: LogRecord) -> list["ConsoleRenderable"]:
+    def render_record(self, record: LogreRecord) -> list["ConsoleRenderable"]:
         message = self.format(record)
         traceback = None
         if record.exc_info and record.exc_info != (None, None, None):
@@ -64,7 +68,7 @@ class HandlerBase(logging.Handler):
             record=record, traceback=traceback, message_renderable=message_renderable
         )
 
-    def emit(self, record: LogRecord) -> None:
+    def emit(self, record: LogreRecord) -> None:
         log_renderables = self.render_record(record)
         record.__setattr__("renderables", log_renderables)
         for sink in self._sinks:
@@ -74,7 +78,7 @@ class HandlerBase(logging.Handler):
             except Exception:
                 self.handleError(record)
 
-    def render_message(self, record: LogRecord, message: str) -> "ConsoleRenderable":
+    def render_message(self, record: LogreRecord, message: str) -> "ConsoleRenderable":
         use_markup: bool = getattr(record, "markup", False)
         style = record.level.style if hasattr(record, "level") else ""
         message_text = (
@@ -104,10 +108,12 @@ class HandlerBase(logging.Handler):
     def render(
         self,
         *,
-        record: LogRecord,
+        record: logging.LogRecord,
         traceback: Traceback | None,
         message_renderable: "ConsoleRenderable",
     ) -> list["ConsoleRenderable"]:
+        record = LogreRecord.from_record(record)
+
         path = resolve_path(record.pathname)
         level_name = record.levelname
         level_text = Text.styled(

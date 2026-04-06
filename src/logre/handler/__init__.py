@@ -10,5 +10,5 @@ __all__ = ("Handler", "default_handler")
 default_handler = Handler()
 default_handler.addFilter(default_filter)
 logging.basicConfig(
-    level=default_level.num, format="%(message)s", handlers=[default_handler]
+    level=default_level, format="%(message)s", handlers=[default_handler]
 )

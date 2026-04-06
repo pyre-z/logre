@@ -1,23 +1,38 @@
+from typing import Self
 import logging
 
 from rich.highlighter import Highlighter
 
-from logre.level import Level
+from logre.level import LogreLevel
 from logre.typedefs import ArgsType, SysExcInfoType
 
-__all__ = ("LogRecord",)
+__all__ = ("LogreRecord",)
 
 
-class LogRecord(logging.LogRecord):
-    level: Level
+class LogreRecord(logging.LogRecord):
+    level: LogreLevel
 
     markup: bool | None = None
     highlighter: Highlighter | None = None
 
+    @classmethod
+    def from_record(cls, record: logging.LogRecord) -> Self:
+        return cls(
+            name=record.name,
+            level=record.levelno,
+            pathname=record.pathname,
+            lineno=record.lineno,
+            msg=record.msg,
+            args=record.args,
+            exc_info=record.exc_info,
+            func=record.funcName,
+            sinfo=record.stack_info,
+        )
+
     def __init__(
         self,
         name: str,
-        level: int | Level,
+        level: int | LogreLevel,
         pathname: str,
         lineno: int,
         msg: object,
@@ -25,13 +40,16 @@ class LogRecord(logging.LogRecord):
         exc_info: SysExcInfoType | None,
         func: str | None = None,
         sinfo: str | None = None,
+        # extra
+        markup: bool | None = None,
+        highlighter: Highlighter | None = None,
     ) -> None:
-        level = Level[level]
+        self.level = LogreLevel(level) if isinstance(level, int) else level
         super().__init__(
-            name, level.num, pathname, lineno, msg, args, exc_info, func, sinfo
+            name, self.level, pathname, lineno, msg, args, exc_info, func, sinfo
         )
-        self.level = level
-        self.levelname = level.name
+        self.markup = markup
+        self.highlighter = highlighter
 
 
-logging.setLogRecordFactory(LogRecord)
+logging.setLogRecordFactory(LogreRecord)

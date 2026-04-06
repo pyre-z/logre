@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 
-from logre.record import LogRecord
+from logre.record import LogreRecord
 
 __all__ = ("AbstractSink",)
 
 
 class AbstractSink(ABC):
     @abstractmethod
-    def write(self, record: LogRecord) -> None: ...
+    def write(self, record: LogreRecord) -> None: ...
 
     def stop(self) -> None:
         return

@@ -1,18 +1,26 @@
+import logging
 from threading import RLock
-from typing import Callable, TextIO
+from typing import Callable, TextIO, Union
 
 from logre.const import IS_RUNNING_IN_PYCHARM
 from logre.handler.base import HandlerBase
-from logre.record import LogRecord
+from logre.record import LogreRecord
 from logre.sink.abc import AbstractSink
 from logre.sink.callable import CallableSink
 from logre.sink.standard import StandardSink
 from logre.typedefs import StrOrPath, Writable
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from logre.filter import Filter, BaseFilter
+
+    FilterTYpe = Union[Filter, BaseFilter, logging.Filter]
+
 __all__ = ("Handler",)
 
 FileSinkArgsType = StrOrPath | TextIO | Writable
-SinkArgsType = FileSinkArgsType | Callable[[LogRecord], None] | AbstractSink
+SinkArgsType = FileSinkArgsType | Callable[[LogreRecord], None] | AbstractSink
 
 _LOCK = RLock()
 
@@ -53,3 +61,6 @@ class Handler(HandlerBase):
     def close(self) -> None:
         for sink in self._sinks:
             sink.tasks_to_complete()
+
+    def addFilter(self, filter: "FilterTYpe") -> None:
+        super().addFilter(filter)
