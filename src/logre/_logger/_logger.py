@@ -37,37 +37,37 @@ class Logger:
         self._core.addHandler(default_handler)
 
     def trace(self, *args, **kwargs):
-        return self.log(LogreLevel.TRACE, *args, **kwargs)
+        self.log(LogreLevel.TRACE, *args, **kwargs)
 
     def debug(self, *args, **kwargs):
-        return self.log(LogreLevel.DEBUG, *args, **kwargs)
+        self.log(LogreLevel.DEBUG, *args, **kwargs)
 
     def info(self, *args, **kwargs):
-        return self.log(LogreLevel.INFO, *args, **kwargs)
+        self.log(LogreLevel.INFO, *args, **kwargs)
 
     def success(self, *args, **kwargs):
-        return self.log(LogreLevel.SUCCESS, *args, **kwargs)
+        self.log(LogreLevel.SUCCESS, *args, **kwargs)
 
     def warning(self, *args, **kwargs):
-        return self.log(LogreLevel.WARNING, *args, **kwargs)
+        self.log(LogreLevel.WARNING, *args, **kwargs)
 
     def warn(self, *args, **kwargs):
-        return self.log(LogreLevel.WARN, *args, **kwargs)
+        self.log(LogreLevel.WARN, *args, **kwargs)
 
     def error(self, *args, **kwargs):
-        return self.log(LogreLevel.ERROR, *args, **kwargs)
+        self.log(LogreLevel.ERROR, *args, **kwargs)
 
     def exception(self, *args, exc_info=True, **kwargs) -> None:
-        return self.log(LogreLevel.ERROR, *args, exc_info=exc_info, **kwargs)
+        self.log(LogreLevel.ERROR, *args, exc_info=exc_info, **kwargs)
 
     def critical(self, *args, **kwargs):
-        return self.log(LogreLevel.CRITICAL, *args, **kwargs)
+        self.log(LogreLevel.CRITICAL, *args, **kwargs)
 
     def fatal(self, *args, **kwargs):
-        return self.log(LogreLevel.FATAL, *args, **kwargs)
+        self.log(LogreLevel.FATAL, *args, **kwargs)
 
     def log(self, *args, **kwargs):
-        return self._core.log(*args, **kwargs)
+        self._core.log(*args, **kwargs)
 
     @property
     def markup(self):

@@ -95,7 +95,9 @@ class HandlerBase(logging.Handler):
             )
         message_text = prefix_text + message_text
 
-        highlighter: "Highlighter" = getattr(record, "highlighter") or self._highlighter
+        highlighter: "Highlighter" = (
+            getattr(record, "highlighter", None) or self._highlighter
+        )
         if highlighter:
             message_text = highlighter(message_text)
 
