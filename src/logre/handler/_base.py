@@ -12,6 +12,7 @@ from logre.highlighter import default_highlighter
 from logre.level import LogreLevel, default_level
 from logre.record import LogreRecord
 from logre.sink import default_sink
+from logre.sink.abc import AbstractSink
 
 if TYPE_CHECKING:
     from rich.console import ConsoleRenderable
@@ -37,9 +38,7 @@ class HandlerBase(logging.Handler):
         ]
         logging.Handler.__init__(self, level)
         self.level = level
-
-        self._sinks = [default_sink]
-
+        self._sinks: list[AbstractSink] = [default_sink]
         self._keywords = []
         self._highlighter = default_highlighter
         self._render = LogRender()
