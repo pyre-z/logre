@@ -3,7 +3,7 @@ from threading import RLock
 from typing import Callable, TextIO, Union
 
 from logre.const import IS_RUNNING_IN_PYCHARM
-from logre.handler.base import HandlerBase
+from logre.handler._base import HandlerBase
 from logre.record import LogreRecord
 from logre.sink.abc import AbstractSink
 from logre.sink.callable import CallableSink
