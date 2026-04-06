@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Any, TextIO
+from typing import Any, TextIO, Optional, Literal
 
 from rich.ansi import AnsiDecoder
 from rich.color import ColorSystem
@@ -17,23 +17,25 @@ from rich.segment import Segment
 from rich.style import Style
 from rich.theme import Theme
 
-from logre.const import IS_RUNNING_IN_PYCHARM, IS_WINDOWS
-from logre.style import HikariTheme
+from logre.const import IS_RUNNING_IN_DEBUGPY, IS_RUNNING_IN_PYCHARM, IS_WINDOWS
+from logre.style import MonokaiProTheme
 
-__all__ = ("Console", "default_console")
+__all__ = ("LogreConsole", "default_console")
 
 STD_OUT = sys.stdout
 STD_ERR = sys.stderr
 
 
 # noinspection t
-class Console(RichConsole):
+class LogreConsole(RichConsole):
     # noinspection PyTypeChecker
     def __init__(
         self,
-        *args,
         record: bool = True,
-        theme: Theme = HikariTheme,
+        color_system: Optional[
+            Literal["auto", "standard", "256", "truecolor", "windows"]
+        ] = None,
+        theme: Theme = MonokaiProTheme,
         legacy_windows: bool | None = None,
         redirect: bool = False,
         **kwargs,
@@ -50,13 +52,19 @@ class Console(RichConsole):
             )
 
         super().__init__(
-            *args, theme=theme, legacy_windows=legacy_windows, record=record, **kwargs
+            color_system=color_system
+            or ("standard" if IS_RUNNING_IN_DEBUGPY else "auto"),
+            theme=theme,
+            legacy_windows=legacy_windows,
+            record=record,
+            **kwargs,
         )
         self.legacy_windows: bool = (
             (
                 detect_legacy_windows()
                 and not self.is_jupyter
                 and not IS_RUNNING_IN_PYCHARM
+                and not IS_RUNNING_IN_DEBUGPY
             )
             if legacy_windows is None
             else legacy_windows
@@ -281,4 +289,6 @@ def _should_do_markup(stream: TextIO = sys.stdout) -> bool:
     return stream.isatty()
 
 
-default_console = Console(width=130 if IS_RUNNING_IN_PYCHARM else None)
+default_console = LogreConsole(
+    width=160 if IS_RUNNING_IN_PYCHARM or IS_RUNNING_IN_DEBUGPY else None
+)

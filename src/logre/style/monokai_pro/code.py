@@ -1,3 +1,4 @@
+# ruff: noqa: F405
 from pygments.style import Style as PyStyle
 from pygments.token import (
     Comment,
@@ -13,12 +14,12 @@ from pygments.token import (
     Text,
 )
 
-from logre.style.const import *
+from logre.style.monokai_pro.const import *  # noqa: F403
 
-__all__ = ("HikariCodeStyle",)
+__all__ = ("MonokaiProCodeStyle",)
 
 
-class HikariCodeStyle(PyStyle):
+class MonokaiProCodeStyle(PyStyle):
     name = "hikari code"
     background_color = BACKGROUND_COLOR
     highlight_color = HIGHLIGHT_COLOR

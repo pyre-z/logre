@@ -1,12 +1,13 @@
+# ruff: noqa: F405
 from rich.default_styles import DEFAULT_STYLES
 from rich.style import Style
 
-from logre.style.const import *
+from logre.style.monokai_pro.const import *  # noqa: F403
 
-__all__ = ("HIKARI_STYLES",)
+__all__ = ("MonokaiProStyles",)
 
 
-HIKARI_STYLES: dict[str, Style] = DEFAULT_STYLES | {
+MonokaiProStyles: dict[str, Style] = DEFAULT_STYLES | {
     # base
     "none": Style.null(),
     "reset": Style(

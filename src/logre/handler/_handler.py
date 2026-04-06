@@ -1,6 +1,6 @@
 import logging
 from threading import RLock
-from typing import Callable, TYPE_CHECKING, TextIO, Union
+from typing import TYPE_CHECKING, Callable, TextIO, Union
 
 from logre.handler._base import HandlerBase
 from logre.record import LogreRecord
@@ -10,9 +10,9 @@ from logre.sink.callable import CallableSink
 from logre.typedefs import StrOrPath, Writable
 
 if TYPE_CHECKING:
-    from logre.filter import Filter, BaseFilter
+    from logre.filter import BaseFilter, Filter
 
-    FilterTYpe = Union[Filter, BaseFilter, logging.Filter]
+    FilterType = Union[Filter, BaseFilter, logging.Filter]
 
 __all__ = ("Handler",)
 
@@ -63,5 +63,5 @@ class Handler(HandlerBase):
         for sink in self._sinks:
             sink.tasks_to_complete()
 
-    def addFilter(self, filter: "FilterTYpe") -> None:
+    def addFilter(self, filter: "FilterType") -> None:
         super().addFilter(filter)

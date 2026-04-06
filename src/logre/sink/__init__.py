@@ -1,4 +1,4 @@
-from logre.sink.console import StandardSink
+from logre.sink.standard import StandardSink
 from logre.console import default_console
 
 __all__ = ("default_sink", )

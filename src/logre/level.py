@@ -4,7 +4,15 @@ from threading import RLock
 
 from rich.style import Style
 
-from logre.style import DARK_GREY, GREEN, GREY, LIGHT_GREY, RED, WHITE, YELLOW
+from logre.style.monokai_pro import (
+    DARK_GREY,
+    GREEN,
+    GREY,
+    LIGHT_GREY,
+    RED,
+    WHITE,
+    YELLOW,
+)
 
 __all__ = ("LogreLevel", "default_level")
 
