@@ -5,20 +5,20 @@ from typing import Any, TextIO
 from rich.ansi import AnsiDecoder
 from rich.color import ColorSystem
 from rich.console import (
-    Console as RichConsole,
-    JustifyMethod,
     NO_CHANGE,
+    JustifyMethod,
     NewLine,
     OverflowMethod,
     detect_legacy_windows,
 )
+from rich.console import Console as RichConsole
 from rich.file_proxy import FileProxy
 from rich.segment import Segment
 from rich.style import Style
 from rich.theme import Theme
 
-from logre.style import HikariTheme
 from logre.const import IS_RUNNING_IN_PYCHARM, IS_WINDOWS
+from logre.style import HikariTheme
 
 __all__ = ("Console", "default_console")
 
@@ -45,7 +45,7 @@ class Console(RichConsole):
         # Unless user already mentioning terminal preference, we use our
         # heuristic to make an informed decision.
         if "force_terminal" not in kwargs:
-            kwargs["force_terminal"] = should_do_markup(
+            kwargs["force_terminal"] = _should_do_markup(
                 stream=kwargs.get("file", sys.stdout)
             )
 
@@ -243,7 +243,7 @@ class Console(RichConsole):
         return result[:-1] if result[-1] == "\n" and result else result
 
 
-def to_bool(value: Any) -> bool:
+def _to_bool(value: Any) -> bool:
     """Return a bool for the arg."""
     if value is None or isinstance(value, bool):
         return bool(value)
@@ -254,7 +254,7 @@ def to_bool(value: Any) -> bool:
     return False
 
 
-def should_do_markup(stream: TextIO = sys.stdout) -> bool:
+def _should_do_markup(stream: TextIO = sys.stdout) -> bool:
     """Decide about use of ANSI colors."""
     py_colors = None
 
@@ -262,14 +262,14 @@ def should_do_markup(stream: TextIO = sys.stdout) -> bool:
     for env_var in ["PY_COLORS", "CLICOLOR", "FORCE_COLOR", "ANSIBLE_FORCE_COLOR"]:
         value = os.environ.get(env_var, None)
         if value is not None:
-            py_colors = to_bool(value)
+            py_colors = _to_bool(value)
             break
 
     if os.environ.get("NO_COLOR", None):
         return False
 
     if py_colors is not None:
-        return to_bool(py_colors)
+        return _to_bool(py_colors)
 
     term = os.environ.get("TERM", "")
     if "xterm" in term:
@@ -281,4 +281,4 @@ def should_do_markup(stream: TextIO = sys.stdout) -> bool:
     return stream.isatty()
 
 
-default_console = Console(width=120 if IS_RUNNING_IN_PYCHARM else None)
+default_console = Console(width=130 if IS_RUNNING_IN_PYCHARM else None)

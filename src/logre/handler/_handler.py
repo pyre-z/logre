@@ -1,16 +1,13 @@
 import logging
 from threading import RLock
-from typing import Callable, TextIO, Union
+from typing import Callable, TYPE_CHECKING, TextIO, Union
 
-from logre.const import IS_RUNNING_IN_PYCHARM
 from logre.handler._base import HandlerBase
 from logre.record import LogreRecord
+from logre.sink import default_sink
 from logre.sink.abc import AbstractSink
 from logre.sink.callable import CallableSink
-from logre.sink.standard import StandardSink
 from logre.typedefs import StrOrPath, Writable
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logre.filter import Filter, BaseFilter
@@ -42,7 +39,7 @@ class Handler(HandlerBase):
 
     def add_sink(self, sink: SinkArgsType) -> None:
         if sink is None:
-            sink = StandardSink(width=180 if IS_RUNNING_IN_PYCHARM else None)
+            sink = default_sink
         elif isinstance(sink, AbstractSink):
             sink = sink
         elif callable(sink):
@@ -58,7 +55,7 @@ class Handler(HandlerBase):
             self._sinks = []
             return result
         if sink in self._sinks:
-            self._sinks.remove(sink)  # ty:ignore[invalid-argument-type]
+            self._sinks.remove(sink)
             return True
         return False
 

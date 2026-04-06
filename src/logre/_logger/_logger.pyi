@@ -18,7 +18,7 @@ class _LoggerConfig(BaseModel):
     markup: bool | None = False
     prefix: str | None = None
 
-class _Logger(LoggerBase):
+class _LogreLogger(LoggerBase):
     _config: _LoggerConfig
 
     def __init__(
@@ -40,7 +40,7 @@ class _Logger(LoggerBase):
     ) -> None: ...
 
 class Logger:
-    _core: _Logger
+    _core: _LogreLogger
 
     def __init__(
         self, markup: bool | None = None, prefix: str | None = None

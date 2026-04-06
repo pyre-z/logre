@@ -26,9 +26,20 @@ class _LogreLogger(LoggerBase):
             level = LogreLevel(level if isinstance(level, int) else default_level)
         super().__init__(name or PROJECT_ROOT.name or "logre", level)
 
-    def _log(self, *args, extra=None, **kwargs) -> None:
-        extra = self._config.model_dump() | dict(extra or {})
-        super()._log(*args, extra=extra, **kwargs)
+    def _log(
+        self,
+        level,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1,
+    ):
+        extra = {
+            k: v for k, v in self._config.model_dump().items() if v is not None
+        } | dict(extra or {})
+        super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
 
 
 class Logger:
