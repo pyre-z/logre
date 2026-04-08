@@ -20,12 +20,11 @@ __all__ = ("MonokaiProCodeStyle",)
 
 
 class MonokaiProCodeStyle(PyStyle):
-    name = "hikari code"
+    name = "Monokai Pro"
     background_color = BACKGROUND_COLOR
     highlight_color = HIGHLIGHT_COLOR
 
     styles = {
-        # No corresponding class for the following:
         Text: WHITE,  # class:  ''
         Error: "#fc618d bg:#1e0010",  # class: 'err'
         Comment: LIGHT_GREY,  # class: 'c'

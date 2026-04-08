@@ -79,7 +79,11 @@ class HandlerBase(logging.Handler):
 
     def render_message(self, record: LogreRecord, message: str) -> "ConsoleRenderable":
         use_markup: bool = getattr(record, "markup", False)
-        style = record.level.style if hasattr(record, "level") else ""
+        style = (
+            record.levelno.style
+            if isinstance(record.levelno, LogreLevel)
+            else LogreLevel(record.levelno).style
+        )
         message_text = (
             Text.from_markup(message, style=style)
             if use_markup
