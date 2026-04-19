@@ -57,6 +57,7 @@ class Logger:
             }
         )
         self._core = _LogreLogger(config=config)
+        self._core.addHandler(default_handler)
 
     def trace(self, *args, **kwargs):
         self.log(LogreLevel.TRACE, *args, **kwargs)
@@ -103,9 +104,7 @@ class Logger:
         )
 
 
-logging.basicConfig(
-    level=default_level, format="%(message)s", handlers=[default_handler]
-)
+logging.basicConfig(handlers=[default_handler])
 logging.setLoggerClass(_LogreLogger)
 logging.getLogger("apscheduler").setLevel(
     logging.DEBUG if os.getenv("DEBUG") else logging.INFO
