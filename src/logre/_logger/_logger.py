@@ -25,7 +25,6 @@ class _LogreLogger(LoggerBase):
         else:
             level = LogreLevel(level if isinstance(level, int) else default_level)
         super().__init__(name or PROJECT_ROOT.name or "logre", level)
-        self.addHandler(default_handler)
 
     def _log(
         self,
@@ -104,6 +103,9 @@ class Logger:
         )
 
 
+logging.basicConfig(
+    level=default_level, format="%(message)s", handlers=[default_handler]
+)
 logging.setLoggerClass(_LogreLogger)
 logging.getLogger("apscheduler").setLevel(
     logging.DEBUG if os.getenv("DEBUG") else logging.INFO
