@@ -1,14 +1,14 @@
 from datetime import datetime, timedelta
 from multiprocessing import Value
 from pathlib import Path
-from typing import Callable, Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Iterable
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from rich.containers import Renderables
 from rich.table import Table
 from rich.text import Text, TextType
 
-from logre.const import IS_RUNNING_IN_PYCHARM, IS_WINDOWS
+from logre.const import IS_RUNNING_IN_DEBUGPY, IS_RUNNING_IN_PYCHARM, IS_WINDOWS
 from logre.level import LogreLevel
 
 if TYPE_CHECKING:
@@ -53,7 +53,9 @@ class LogRender:
         line_no: int | None = None,
         link_path: Path | str | None = None,
     ) -> list[Table]:
-        linked_path = link_path is not None and not IS_RUNNING_IN_PYCHARM
+        linked_path = not any(
+            [link_path is None, IS_RUNNING_IN_PYCHARM, IS_RUNNING_IN_DEBUGPY]
+        )
 
         level = level or LogreLevel.NOTSET
 
@@ -92,7 +94,7 @@ class LogRender:
             time_format = time_format or self._config.time_format
 
             if callable(time_format):
-                log_time_display = time_format(log_time)
+                log_time_display = time_format(log_time)  # ty:ignore[call-top-callable]
             else:
                 log_time_display = Text(log_time.strftime(time_format))
 
@@ -108,7 +110,7 @@ class LogRender:
                 log_time_display = Text(" " * len(log_time_display))
 
             if self._config.newline_time:
-                if not time_need_omit:
+                if not time_need_omit and output_time is not None:
                     if LAST_LOG_COUNT.value == 1:
                         output_time.add_row()
                     output_time.add_row(log_time_display)

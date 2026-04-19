@@ -25,6 +25,7 @@ class _LogreLogger(LoggerBase):
         else:
             level = LogreLevel(level if isinstance(level, int) else default_level)
         super().__init__(name or PROJECT_ROOT.name or "logre", level)
+        self.addHandler(default_handler)
 
     def _log(
         self,
@@ -42,9 +43,21 @@ class _LogreLogger(LoggerBase):
         super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
 
 
+_UN_SET = object()
+
+
 class Logger:
-    def __init__(self, markup=None, prefix=None) -> None:
-        self._core = _LogreLogger(config=_LoggerConfig(markup=markup, prefix=prefix))
+    def __init__(
+        self, markup=_UN_SET, prefix=_UN_SET, *, config: _LoggerConfig | None = None
+    ) -> None:
+        config = (config or _LoggerConfig()).model_copy(
+            update={
+                k: v
+                for k, v in {"markup": markup, "prefix": prefix}.items()
+                if v is not _UN_SET
+            }
+        )
+        self._core = _LogreLogger(config=config)
         self._core.addHandler(default_handler)
 
     def trace(self, *args, **kwargs):
@@ -92,7 +105,6 @@ class Logger:
         )
 
 
-logging.basicConfig(handlers=[default_handler])
 logging.setLoggerClass(_LogreLogger)
 logging.getLogger("apscheduler").setLevel(
     logging.DEBUG if os.getenv("DEBUG") else logging.INFO

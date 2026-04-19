@@ -1,6 +1,4 @@
-from math import prod
-from multiprocessing import RLock as Lock
-from typing import TYPE_CHECKING, ClassVar, Mapping
+from typing import Mapping
 
 from pydantic import BaseModel
 from typing_extensions import Self
@@ -8,9 +6,6 @@ from typing_extensions import Self
 from logre._logger._base import LoggerBase
 from logre.level import LogreLevel
 from logre.typedefs import ArgsType, ExcInfoType
-
-if TYPE_CHECKING:
-    from multiprocessing.synchronize import RLock as LockType
 
 __all__ = ("Logger", "logger")
 
@@ -39,11 +34,17 @@ class _LogreLogger(LoggerBase):
         stacklevel: int = 1,
     ) -> None: ...
 
+_UN_SET = object()
+
 class Logger:
     _core: _LogreLogger
 
     def __init__(
-        self, markup: bool | None = None, prefix: str | None = None
+        self,
+        markup: bool | None = _UN_SET,
+        prefix: str | None = _UN_SET,
+        *,
+        config: _LoggerConfig | None = None,
     ) -> None: ...
     def trace(
         self,

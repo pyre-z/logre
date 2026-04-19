@@ -12,9 +12,10 @@ from pygments.token import (
     Number,
     Operator,
     String,
-    Text as TextToken,
     Token,
 )
+from pygments.token import Text as TextToken
+
 # noinspection PyProtectedMember
 from rich._loop import loop_last
 from rich.columns import Columns
@@ -32,11 +33,11 @@ from rich.traceback import (
     PathHighlighter,
     Stack,
     Trace,
-    Traceback as _Traceback,
 )
+from rich.traceback import Traceback as _Traceback
 from typing_extensions import Iterable
 
-from logre.const import IS_RUNNING_IN_PYCHARM
+from logre.const import IS_RUNNING_IN_DEBUGPY, IS_RUNNING_IN_PYCHARM
 
 __all__ = ("Traceback", "TracebacksConfig")
 
@@ -74,7 +75,7 @@ class Traceback(_Traceback):
             width=config.width,
             code_width=config.code_with,
             extra_lines=config.extra_lines,
-            theme=config.theme,
+            theme=config.theme,  # ty:ignore[invalid-argument-type]
             word_wrap=config.word_wrap,
             show_locals=config.show_locals,
             locals_max_length=config.locals_config.max_length,
@@ -83,7 +84,7 @@ class Traceback(_Traceback):
             locals_hide_sunder=config.locals_config.hide_sunder,
             indent_guides=config.indent_guides,
             suppress=config.suppress,
-            max_frames=config.max_frames,
+            max_frames=config.max_frames,  # ty:ignore[invalid-argument-type]
         )
 
     # noinspection PyMethodOverriding
@@ -233,7 +234,9 @@ class Traceback(_Traceback):
             if os.path.exists(frame.filename):
                 file_link = Path(frame.filename).as_uri()
 
-                if self.config.link_path and not IS_RUNNING_IN_PYCHARM:
+                if self.config.link_path and not (
+                    IS_RUNNING_IN_PYCHARM or IS_RUNNING_IN_DEBUGPY
+                ):
                     filename_text = f"[link={file_link}]{frame.filename}[/link]"
                     lineno_text = (
                         f"[link={file_link}#{frame.lineno}]{frame.lineno}[/link]"
