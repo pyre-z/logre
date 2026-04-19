@@ -58,7 +58,6 @@ class Logger:
             }
         )
         self._core = _LogreLogger(config=config)
-        self._core.addHandler(default_handler)
 
     def trace(self, *args, **kwargs):
         self.log(LogreLevel.TRACE, *args, **kwargs)
