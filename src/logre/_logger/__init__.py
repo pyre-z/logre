@@ -1,4 +1,3 @@
-from logre._logger._logger import logger
+from logre._logger._logger import Logger, logger
 
-__all__ = ("logger", )
-
+__all__ = ("logger", "Logger")

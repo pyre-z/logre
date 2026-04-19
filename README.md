@@ -1,14 +1,13 @@
-# ⚠️ 注意：本项目还在开发中，不能保证正确运行
-
----
+<div align="center">
 
 # logre
 
-<div align="center">
-
-一个融合了 [Loguru](https://github.com/Delgan/loguru) 的强大日志管理功能和 [Rich](https://github.com/Textualize/rich) 的华丽终端渲染的 Python 日志库。
+一个融合了 [Loguru](https://github.com/Delgan/loguru) 的强大日志管理功能和 [Rich](https://github.com/Textualize/rich)
+的华丽终端渲染的 Python 日志库。
 
 </div>
+
+> ⚠️ 注意：本项目还在开发中，不能保证正确运行
 
 ## ✨ 特性
 
@@ -123,23 +122,24 @@ LogreLevel.INFO.style = Style(color="blue", bold=True)
 from logre.handler.render import LogRenderConfig
 
 config = LogRenderConfig(
-    show_time=True,           # 显示时间戳
-    show_level=True,          # 显示日志级别名称
-    show_level_icon=True,     # 显示图标（Windows 默认为 True）
-    show_path=True,           # 显示源文件和行号
-    newline_time=True,        # 时间戳单独一行
+    show_time=True,  # 显示时间戳
+    show_level=True,  # 显示日志级别名称
+    show_level_icon=True,  # 显示图标（Windows 默认为 True）
+    show_path=True,  # 显示源文件和行号
+    newline_time=True,  # 时间戳单独一行
     time_format="[%Y/%m/%d %X]",  # 时间格式
-    omit_times_part=True,     # 在间隔内省略重复时间戳
-    omit_times_part_interval=1,   # 间隔（秒）
-    level_width=8,            # 级别名称列宽度
+    omit_times_part=True,  # 在间隔内省略重复时间戳
+    omit_times_part_interval=1,  # 间隔（秒）
+    level_width=8,  # 级别名称列宽度
 )
 ```
 
 ### 高亮特性
 
 logre 自动高亮：
+
 - **邮件** - `user@example.com` 自动高亮
-- **快捷键** - `CTRL+K`, `CTRL+ALT+C` 对修饰键和按键分别高亮  
+- **快捷键** - `CTRL+K`, `CTRL+ALT+C` 对修饰键和按键分别高亮
 - **URL** - 超链接高亮
 - **日期** - ISO8601 时间戳高亮
 
@@ -149,11 +149,13 @@ logre 自动高亮：
 from logre.highlighter import default_highlighter
 from rich.highlighter import Highlighter
 
+
 class MyHighlighter(Highlighter):
     def highlight(self, text):
         # 自定义高亮逻辑
         pass
-        
+
+
 default_highlighter.add_highlighter(MyHighlighter())
 ```
 
@@ -187,9 +189,11 @@ src/logre/
 [//]: # (## ⚠️ Windows 编码问题)
 
 [//]: # ()
+
 [//]: # (如果你遇到以下错误：)
 
 [//]: # ()
+
 [//]: # (```)
 
 [//]: # (UnicodeEncodeError: 'gbk' codec can't encode character '\U0001f6a8' in position 0: illegal multibyte sequence)
@@ -197,9 +201,11 @@ src/logre/
 [//]: # (```)
 
 [//]: # ()
+
 [//]: # (这是因为中文 Windows 默认使用 GBK 编码，而日志输出包含 Emoji 字符无法编码。解决方案：)
 
 [//]: # ()
+
 [//]: # (1. **切换终端编码为 UTF-8**：)
 
 [//]: # (   ```cmd)
@@ -209,6 +215,7 @@ src/logre/
 [//]: # (   ```)
 
 [//]: # ()
+
 [//]: # (2. **禁用图标显示**：)
 
 [//]: # (   ```python)
@@ -220,6 +227,7 @@ src/logre/
 [//]: # (   ```)
 
 [//]: # ()
+
 [//]: # (3. **设置环境变量强制使用 UTF-8**：)
 
 [//]: # (   ```cmd)
@@ -231,9 +239,11 @@ src/logre/
 [//]: # (## 🧪 测试)
 
 [//]: # ()
+
 [//]: # (项目包含完整的测试套件：)
 
 [//]: # ()
+
 [//]: # (```bash)
 
 [//]: # (pytest tests/)
