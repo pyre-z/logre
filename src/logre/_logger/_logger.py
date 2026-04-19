@@ -104,7 +104,6 @@ class Logger:
         )
 
 
-logging.basicConfig(handlers=[default_handler])
 logging.setLoggerClass(_LogreLogger)
 logging.getLogger("apscheduler").setLevel(
     logging.DEBUG if os.getenv("DEBUG") else logging.INFO
